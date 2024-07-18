@@ -10,13 +10,27 @@ import Foundation
 import XCTest
 
 class BaseTestCase: XCTestCase {
-
+    
     let app = XCUIApplication()
+    
+      var emailTextField: XCUIElement!
+       var passwordTextField: XCUIElement!
+       var logoutButton: XCUIElement!
+       var loginButton: XCUIElement!
+    
     
     override func setUpWithError() throws {
         // fix "app.launch()" usage in each func
         continueAfterFailure = false
         app.launch()
+        
+        
+        // Initialize UI elements
+                emailTextField = app.textFields["Email"]
+                passwordTextField = app.secureTextFields["Password"]
+                logoutButton = app.buttons["Logout"]
+                loginButton = app.buttons["login-button"]
+       
     }
     
     
@@ -25,40 +39,45 @@ class BaseTestCase: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
     
-    
-    func fillEmailField(email: String) {
-
-        let emailTextField = app.textFields["Email"]
-        
-        checkElementExists(elements: [emailTextField], timeout: 1)
-        emailTextField.tap()
-        emailTextField.typeText(email)
+    func checkElementExists(elements: [XCUIElement], timeout: TimeInterval) {
+        for element in elements {
+            let exists = element.waitForExistence(timeout: timeout)
+            XCTAssertTrue(exists, "Element \(element) does not exist.")
+        }
     }
+      
     
     
-    func fillPasswordField(password: String) {
-
-        //        let passwordTextField = app.secureTextFields.containing(NSPredicate(format: "placeholderValue == %@", "Password")).element
+        //for Tasks class (setUp))
+    func logIn() {
+        // Ensure the user is logged in before each test
+        fillEmailField(email: "test@example.com")
+        app.keyboards.buttons["Return"].tap()
+        //self.tapReturnKey() - func doesn't work yet
+        fillPasswordField(password: "1")
+        //self.tapReturnKey() - func doesn't work yet
+        app.keyboards.buttons["Return"].tap()
+        app.buttons["login-button"].tap()
         
-        let passwordTextField = app.secureTextFields["Password"]
-        checkElementExists(elements: [passwordTextField], timeout: 1)
+        if errorLoginAlertIs() {
+            retryLogin(confirm: true)
+        }
         
-        passwordTextField.tap()
-        passwordTextField.typeText(password)
+       checkElementExists(elements: [logoutButton], timeout: 5)
     }
+        
     
+    // Function to handle logout if logged in
     func logout(confirm: Bool) {
-
-        let logout = app.buttons["Logout"]
-        checkElementExists(elements: [logout], timeout: 5)
-        logout.tap()
-        confirmAndCancelLogout(confirm: confirm)
-        
-    }
+            if isUserLoggedIn() {
+                logoutButton.tap()
+                handleLogoutAlert(confirm: confirm)
+            }
+        }
     
     
-    func confirmAndCancelLogout(confirm: Bool) {
-
+    // Handle the logout confirmation alert
+private  func handleLogoutAlert(confirm: Bool) {
         let alert = app.alerts.firstMatch
         let logoutButton = alert.buttons["Logout"]
         let cancelButton = alert.buttons["Cancel"]
@@ -70,52 +89,112 @@ class BaseTestCase: XCTestCase {
                 cancelButton.tap()
             }
         } else {
-            return
+            XCTFail("Logout confirmation alert did not appear.")
         }
     }
     
     
-    func checkElementExists(elements: [XCUIElement], timeout: TimeInterval) {
-        for element in elements {
-            let exists = element.waitForExistence(timeout: timeout)
-            XCTAssertTrue(exists, "Element \(element) does not exist.")
-        }
-        
-        
-        
-        func tapReturnKey() {
-            let returnKey = app.buttons["Return"]
-            if returnKey.exists {
-                returnKey.tap()
-            } else {
-                XCTFail("Return key does not exist")
-            }
-        }
-        
-        
-        
-        func checkElementsAreHittable( elements: [XCUIElement], after  timeout: TimeInterval) -> Bool {
-            let predicate = NSPredicate { obj, context -> Bool in
-                let elements = obj as! [XCUIElement]
-                for element in elements {
-                    if false == element.isHittable {
-                        return false
-                    }
+    
+    //for tearnDown in tasks class
+    //Check if the user is logged in
+    func isUserLoggedIn() -> Bool {
+        let tasksScreenElement = app.buttons["Logout"]
+        return tasksScreenElement.exists
+    }
+    
+        func fillEmailField(email: String) {
+                    
+                    checkElementExists(elements: [emailTextField], timeout: 1)
+                    emailTextField.tap()
+                    emailTextField.typeText(email)
                 }
-                return true
-            }
-            let expectation = XCTNSPredicateExpectation(predicate: predicate, object: elements)
-                let result = XCTWaiter().wait(for: [expectation], timeout: timeout)
-                return result == .completed
+        
+        
+        func fillPasswordField(password: String) {
+            
+            //        let passwordTextField = app.secureTextFields.containing(NSPredicate(format: "placeholderValue == %@", "Password")).element
+            
+            checkElementExists(elements: [passwordTextField], timeout: 1)
+            passwordTextField.tap()
+            passwordTextField.typeText(password)
         }
-        
-        func checkAllButtonsAreHittable(app: XCUIApplication, timeout: TimeInterval = 5) -> Bool {
-               let buttons = app.buttons.allElementsBoundByIndex
-               return checkElementsAreHittable(elements: buttons, after: timeout)
-           }
-           
+       
     
+    
+    
+    
+    func retryLogin (confirm: Bool) {
+        let loginAlert = app.alerts["Error"]
+        let retryButton = app.buttons["Retry"]
+        let cancelButton = app.buttons["Cancel"]
         
-        
+        // Check if the error alert is present
+        if loginAlert.waitForExistence(timeout: 5) {
+            // Wait for the retry button to appear
+            if retryButton.waitForExistence(timeout: 1) {
+                // Tap the appropriate button based on the confirm parameter
+                if confirm {
+                    retryButton.tap()
+                } else {
+                    cancelButton.tap()
+                }
+            } else {
+                XCTFail("Retry button not found in error alert.")
+            }
+        } else {
+            XCTFail("Error alert not found.")
+        }
     }
-}
+    
+    
+    func errorLoginAlertIs() -> Bool {
+        let loginAlert = app.alerts["Error"]
+        return loginAlert.exists
+    }
+    
+    
+
+    
+    
+    }
+    
+
+  
+   
+        
+        
+        
+        //dont use this func
+//        func tapReturnKey() {
+//            let returnKey = app.buttons["Return"]
+//            if returnKey.exists {
+//                returnKey.tap()
+//            } else {
+//                XCTFail("Return key does not exist")
+//            }
+//        }
+        
+        
+        
+       
+        
+        
+        
+//        func checkElementsAreHittable(elements: [XCUIElement], after timeout: TimeInterval) -> (allHittable: Bool, nonHittableButtons: [XCUIElement]) {
+//            var nonHittableButtons: [XCUIElement] = []
+//            for element in elements {
+//                if !element.isHittable {
+//                    nonHittableButtons.append(element)
+//                }
+//            }
+//            return (nonHittableButtons.isEmpty, nonHittableButtons)
+//        }
+//        
+//        
+//        
+//        func checkAllButtonsAreHittable(app: XCUIApplication, timeout: TimeInterval = 5) -> (allHittable: Bool, nonHittableButtons: [XCUIElement]) {
+//            let buttons = app.buttons.allElementsBoundByIndex
+//            return checkElementsAreHittable(elements: buttons, after: timeout)
+//        }
+//        
+//}

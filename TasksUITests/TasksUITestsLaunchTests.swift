@@ -6,41 +6,49 @@
 //  Copyright © 2024 Cultured Code. All rights reserved.
 //
 
+
+// Tasks class doesnt work yet
+
 import XCTest
 
 class Tasks: BaseTestCase {
     
-    
+    //define the login screen elements in the Tasks class to use it in multiple tests
+    var checklistpoint: XCUIElement!
     
     
     
     override func setUpWithError() throws {
-        continueAfterFailure = false
         try super.setUpWithError()
         
-        // Ensure the user is logged in before each test
-        self.fillEmailField(email: "test@example.com")
-        //self.tapReturnKey()
-        self.fillPasswordField(password: "123")
-        //     self.tapReturnKey()
-        app.buttons["login-button"].tap()
+        // Initialize login screen elements
+        checklistpoint = app.staticTexts["Buy milk"]
         
+        self.logIn()
         
-        
+      
+    
         
     }
+    
     
     override func tearDownWithError() throws {
-        
+        // Log out the user if logged in
+        if self.isUserLoggedIn() {
+            self.logout(confirm: true)
+        }
+        try super.tearDownWithError()
     }
     
+    
+    
     func testConfirmLogout() {
-        let app = XCUIApplication()
-        app.launch()
         
         self.logout(confirm: true)
-        //screen appears
         
+        
+        //add verification that Login screen appears
+        self.checkElementExists(elements: [emailTextField, passwordTextField, loginButton], timeout: 3)
     }
     
     
@@ -48,22 +56,23 @@ class Tasks: BaseTestCase {
     
     
     func testCancelLogout() {
-        let app = XCUIApplication()
-        app.launch()
-        
-        
         self.logout(confirm: false)
         
-        //screen appers
+        //add verification that Tasks screen opened
+        self.checkElementExists(elements: [checklistpoint], timeout: 3)
+        
+        //add restart app + checking screen
         
     }
     
     
-    func testAllButtonsAreHittable() {
-        let app = XCUIApplication()
-        app.launch()
-        
-   //     XCTAssertTrue(self.checkAllButtonsAreHittable(), "One or more buttons are not hittable")
-            }
-    }
-
+//    func testAllButtonsAreHittable() {
+//        let result = self.checkAllButtonsAreHittable()
+//        XCTAssertTrue(result.allHittable, "One or more buttons are not hittable")
+//        
+//        if !result.allHittable {
+//            let nonHittableButtons = result.nonHittableButtons.map { $0.label }
+//            XCTFail("Buttons not hittable: \(nonHittableButtons)")
+//        }
+//    }
+}
