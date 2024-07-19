@@ -24,7 +24,7 @@ class Tasks: BaseTestCase {
         // Initialize login screen elements
         checklistpoint = app.staticTexts["Buy milk"]
         
-        self.logIn()
+        self.logIn(email: "test@example.com", password: "123")
         
       
     
@@ -49,11 +49,16 @@ class Tasks: BaseTestCase {
         
         //add verification that Login screen appears
         self.checkElementExists(elements: [emailTextField, passwordTextField, loginButton], timeout: 3)
+        
+        
+        // Restart the app
+        app.terminate()
+        app.launch()
+        
+        // Verify that the Login screen appears again after restarting the app
+        self.checkElementExists(elements: [emailTextField, passwordTextField, loginButton], timeout: 3)
+        
     }
-    
-    
-    
-    
     
     func testCancelLogout() {
         self.logout(confirm: false)

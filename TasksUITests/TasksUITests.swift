@@ -47,7 +47,7 @@ class LoginScreen: BaseTestCase {
         self.fillEmailField(email: "test@example.com")
         app.keyboards.buttons["Return"].tap()
         
-        self.fillPasswordField(password: "1")
+        self.fillPasswordField(password: "wA!@#$%^&*(_+=[}|':,>?/`~")
         app.keyboards.buttons["Return"].tap()
         
         let doneButton = app.buttons["login-button"]

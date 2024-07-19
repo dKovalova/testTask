@@ -11,6 +11,7 @@ import XCTest
 
 class BaseTestCase: XCTestCase {
     
+    
     let app = XCUIApplication()
     
       var emailTextField: XCUIElement!
@@ -37,6 +38,7 @@ class BaseTestCase: XCTestCase {
     
     override func tearDownWithError() throws {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
+
     }
     
     func checkElementExists(elements: [XCUIElement], timeout: TimeInterval) {
@@ -49,12 +51,12 @@ class BaseTestCase: XCTestCase {
     
     
         //for Tasks class (setUp))
-    func logIn() {
+    func logIn(email: String, password: String) {
         // Ensure the user is logged in before each test
-        fillEmailField(email: "test@example.com")
+        fillEmailField(email: email)
         app.keyboards.buttons["Return"].tap()
         //self.tapReturnKey() - func doesn't work yet
-        fillPasswordField(password: "1")
+        fillPasswordField(password: password)
         //self.tapReturnKey() - func doesn't work yet
         app.keyboards.buttons["Return"].tap()
         app.buttons["login-button"].tap()
@@ -123,26 +125,40 @@ private  func handleLogoutAlert(confirm: Bool) {
     
     
     
-    func retryLogin (confirm: Bool) {
+    func retryLogin (confirm: Bool, maxRetries: Int = 3) {
         let loginAlert = app.alerts["Error"]
         let retryButton = app.buttons["Retry"]
         let cancelButton = app.buttons["Cancel"]
         
-        // Check if the error alert is present
-        if loginAlert.waitForExistence(timeout: 5) {
-            // Wait for the retry button to appear
-            if retryButton.waitForExistence(timeout: 1) {
-                // Tap the appropriate button based on the confirm parameter
-                if confirm {
-                    retryButton.tap()
+        var attempts = 0
+        
+        //loop
+        while attempts < maxRetries {
+            
+            // Check if the error alert is present
+            if loginAlert.waitForExistence(timeout: 5) {
+                // Wait for the retry button to appear
+                if retryButton.waitForExistence(timeout: 1) {
+                    // Tap the appropriate button based on the confirm parameter
+                    if confirm {
+                        retryButton.tap()
+                    } else {
+                        cancelButton.tap()
+                    }
                 } else {
-                    cancelButton.tap()
+                    XCTFail("Retry button not found in error alert.")
                 }
             } else {
-                XCTFail("Retry button not found in error alert.")
+                return
             }
-        } else {
-            XCTFail("Error alert not found.")
+            // Increment attempts
+            attempts += 1
+            
+            // Check if maximum retries reached
+            if attempts >= maxRetries {
+                XCTFail("Impossible to login after \(maxRetries) attempts.")
+            }
+            
         }
     }
     
