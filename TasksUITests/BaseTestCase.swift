@@ -53,12 +53,15 @@ class BaseTestCase: XCTestCase {
         //for Tasks class (setUp))
     func logIn(email: String, password: String) {
         // Ensure the user is logged in before each test
+        checkElementExists(elements: [emailTextField], timeout: 1)
         fillEmailField(email: email)
         app.keyboards.buttons["Return"].tap()
         //self.tapReturnKey() - func doesn't work yet
+        checkElementExists(elements: [passwordTextField], timeout: 1)
         fillPasswordField(password: password)
         //self.tapReturnKey() - func doesn't work yet
         app.keyboards.buttons["Return"].tap()
+        checkElementExists(elements: [loginButton], timeout: 1)
         app.buttons["login-button"].tap()
         
         if errorLoginAlertIs() {
@@ -169,7 +172,20 @@ private  func handleLogoutAlert(confirm: Bool) {
     }
     
     
-
+    func incorrectLoginValuesAlert() {
+        let errorAlert = app.alerts["Error"]
+        let okButton = errorAlert.buttons["Ok"]
+        
+        if errorAlert.waitForExistence(timeout: 3) {
+            if okButton.exists {
+                okButton.tap()
+            } else {
+                XCTFail("Ok button not found in error alert.")
+            }
+        } else {
+            XCTFail("Error alert not found.")
+        }
+    }
     
     
     }

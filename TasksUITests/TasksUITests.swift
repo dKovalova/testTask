@@ -13,6 +13,7 @@ class LoginScreen: BaseTestCase {
     var checklistpoint: XCUIElement!
     var loggingin: XCUIElement!
     var toolbar: XCUIElement!
+    var errorAlert: XCUIElement!
     
     override func setUpWithError() throws {
         try super.setUpWithError()
@@ -25,6 +26,7 @@ class LoginScreen: BaseTestCase {
         loggingin = app.staticTexts["Logging in..."]
         checklistpoint = app.staticTexts["Buy milk"]
         toolbar = app.toolbars["Toolbar"]
+        errorAlert = app.alerts["Error"]
         
         
         // add checking if user is logged in = logout it
@@ -47,16 +49,16 @@ class LoginScreen: BaseTestCase {
         
         // add func - runActivity("Enter email and password")
         
-        self.fillEmailField(email: "test@example.com")
-        app.keyboards.buttons["Return"].tap()
+//        self.fillEmailField(email: "test@example.com")
+//        app.keyboards.buttons["Return"].tap()
+//        self.fillPasswordField(password: "wA!@#$%^&*(_+=[}|':,>?/`~")
+//        app.keyboards.buttons["Return"].tap()
+//        let doneButton = app.buttons["login-button"]
+//        self.checkElementExists(elements: [doneButton], timeout: 1)
+//        app.buttons["login-button"].tap()
         
-        self.fillPasswordField(password: "wA!@#$%^&*(_+=[}|':,>?/`~")
-        app.keyboards.buttons["Return"].tap()
         
-        let doneButton = app.buttons["login-button"]
-        self.checkElementExists(elements: [doneButton], timeout: 1)
-        app.buttons["login-button"].tap()
-        
+        logIn(email: "test@example.com", password: "wA!@#$%^&*(_+=[}|':,>?/`~")
         
         // Check that the "Logging in..." message appears
         self.checkElementExists(elements: [loggingin], timeout: 1)
@@ -73,7 +75,13 @@ class LoginScreen: BaseTestCase {
         
     }
     
+    func testLoginWithInvalidEmail() {
     
+        logIn(email: "example.com", password: "123")
+        incorrectLoginValuesAlert()
+      
+        
+    }
     
     
     

@@ -24,7 +24,7 @@ class Tasks: BaseTestCase {
         // Initialize login screen elements
         checklistpoint = app.staticTexts["Buy milk"]
         
-        self.logIn(email: "test@example.com", password: "123")
+        self.logIn(email: "test@example.com", password: "1")
         
       
     
