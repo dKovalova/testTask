@@ -26,6 +26,9 @@ class LoginScreen: BaseTestCase {
         checklistpoint = app.staticTexts["Buy milk"]
         toolbar = app.toolbars["Toolbar"]
         
+        
+        // add checking if user is logged in = logout it
+        
         // In UI tests it’s important to set the initial state - such as interface orientation - required for your tests before they run. The setUp method is a good place to do this.
     }
     
