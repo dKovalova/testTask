@@ -55,11 +55,17 @@ class LoginScreen: BaseTestCase {
         
     
     
-        // Check if there's an error alert
+        // Check if there's an error alert and retry
+        self.checkElementExists(elements: [loginAlert], timeout: 3)
            if errorLoginAlertIs() {
                // Retry login if there's an error alert
                retryLogin(confirm: true)
            }
+        
+        
+        // Check that the "Logging in..." message appears
+        self.checkElementExists(elements: [loggingin], timeout: 1)
+        
         
         // Check that the "Checklist" screen appears
         self.checkElementExists(elements: [checklistpoint, logoutButton, toolbar], timeout: 5)

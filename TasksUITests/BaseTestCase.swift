@@ -138,75 +138,76 @@ private  func handleLogoutAlert(confirm: Bool) {
         return loginAlert.exists
     }
     
-    func retryLogin (confirm: Bool) {
-        
-        // Check if the error alert is present
-        if loginAlert.waitForExistence(timeout: 3) {
-            print("Error alert is present.")
-            
-            let retryButton = loginAlert.buttons["Retry"]
-            let cancelButton = loginAlert.buttons["Cancel"]
-            
-            
-            checkElementExists(elements: [retryButton], timeout: 2)
-            // Wait for the retry button to appear
-            if retryButton.waitForExistence(timeout: 1)  && retryButton.isHittable {
-                print("Retry button is hittable.")
-                
-                // Tap the appropriate button based on the confirm parameter
-                if confirm {
-                    retryButton.tap()
-                    print("Tapped on Retry button.")
     
-                } else {
-                    cancelButton.tap()
-                    print("Tapped on Cancel button.")
-                }
-            } else {
-                print("Retry button is not hittable or does not exist.")
-            }
-        } else {
-            print("Error alert did not appear.")
-        }
-    }
-    
-    
-//    func retryLogin (confirm: Bool, maxRetries: Int = 2) {
-//        let loginAlert = app.alerts["Error"]
-//        let retryButton = app.buttons["Retry"]
-//        let cancelButton = app.buttons["Cancel"]
+//    func retryLogin (confirm: Bool) {
 //        
-//        var attempts = 0
-//        
-//        //loop
-//        while attempts < maxRetries {
+//        // Check if the error alert is present
+//        if loginAlert.waitForExistence(timeout: 3) {
+//            print("Error alert is present.")
 //            
-//            // Check if the error alert is present
-//            if loginAlert.waitForExistence(timeout: 5) {
-//                // Wait for the retry button to appear
-//                if retryButton.waitForExistence(timeout: 1) {
-//                    // Tap the appropriate button based on the confirm parameter
-//                    if confirm {
-//                        retryButton.tap()
-//                    } else {
-//                        cancelButton.tap()
-//                    }
+//            let retryButton = app.buttons["Retry"]
+//            let cancelButton = app.buttons["Cancel"]
+//            
+//            
+//            checkElementExists(elements: [retryButton], timeout: 2)
+//            // Wait for the retry button to appear
+//            if retryButton.waitForExistence(timeout: 1)  && retryButton.isHittable {
+//                print("Retry button is hittable.")
+//                
+//                // Tap the appropriate button based on the confirm parameter
+//                if confirm {
+//                    retryButton.tap()
+//                    print("Tapped on Retry button.")
+//    
 //                } else {
-//                    XCTFail("Retry button not found in error alert.")
+//                    cancelButton.tap()
+//                    print("Tapped on Cancel button.")
 //                }
 //            } else {
-//                return
+//                print("Retry button is not hittable or does not exist.")
 //            }
-//            // Increment attempts
-//            attempts += 1
-//            
-//            // Check if maximum retries reached
-//            if attempts >= maxRetries {
-//                XCTFail("Impossible to login after \(maxRetries) attempts.")
-//            }
-//            
+//        } else {
+//            print("Error alert did not appear.")
 //        }
 //    }
+    
+    
+    func retryLogin (confirm: Bool, maxRetries: Int = 2) {
+        let loginAlert = app.alerts["Error"]
+        let retryButton = app.buttons["Retry"]
+        let cancelButton = app.buttons["Cancel"]
+        
+        var attempts = 0
+        
+        //loop
+        while attempts < maxRetries {
+            
+            // Check if the error alert is present
+            if loginAlert.waitForExistence(timeout: 5) {
+                // Wait for the retry button to appear
+                if retryButton.waitForExistence(timeout: 1) {
+                    // Tap the appropriate button based on the confirm parameter
+                    if confirm {
+                        retryButton.tap()
+                    } else {
+                        cancelButton.tap()
+                    }
+                } else {
+                    XCTFail("Retry button not found in error alert.")
+                }
+            } else {
+                return
+            }
+            // Increment attempts
+            attempts += 1
+            
+            // Check if maximum retries reached
+            if attempts >= maxRetries {
+                XCTFail("Impossible to login after \(maxRetries) attempts.")
+            }
+            
+        }
+    }
     
     
 
