@@ -63,7 +63,7 @@ class LoginScreen: BaseTestCase {
         // Check that the "Logging in..." message appears
         self.checkElementExists(elements: [loggingin], timeout: 1)
         
-        //fix this func
+    
         // Check if there's an error alert
            if errorLoginAlertIs() {
                // Retry login if there's an error alert
@@ -75,11 +75,63 @@ class LoginScreen: BaseTestCase {
         
     }
     
+    
+    
+    //broken test
+    //wrong alert found durins test execution
     func testLoginWithInvalidEmail() {
+        let okButton = app.buttons["Ok"]
     
         logIn(email: "example.com", password: "123")
-        incorrectLoginValuesAlert()
-      
+    
+        
+        //checking alert existance
+        if  incorrectLoginValuesAlertIs() {
+            if okButton.exists {
+                okButton.tap()
+            } else {
+                XCTFail("Ok button not found in error alert.")
+            }
+        } else {
+            XCTFail("Error alert not found.")
+        }
+        }
+       
+    
+        
+    func testLoginButtonAvailability () {
+        
+        
+        //only email field is filled
+        fillEmailField (email: "test")
+        app.keyboards.buttons["Return"].tap()
+        XCTAssertTrue(isButtonHittable(button: "login-button"), "Login button should not be hittable when only email is filled")
+        
+        
+        // Clear email field
+        clearTextInField(emailTextField)
+
+        
+        
+        // only password field is filled
+        fillPasswordField(password: "123")
+        app.keyboards.buttons["Return"].tap()
+        XCTAssertTrue(isButtonHittable(button: "login-button"), "Login button should not be hittable when only password is filled")
+        
+        // Clear password field
+        clearTextInField(passwordTextField)
+        
+        
+        // Both fields are filled
+        fillEmailField(email: "test@example.com")
+        fillPasswordField(password: "123")
+        app.keyboards.buttons["Return"].tap()
+        
+        XCTAssertTrue(isButtonHittable(button: "login-button"), "Login button should be hittable when both fields are filled")
+
+    }
+        
+    
         
     }
     
@@ -88,4 +140,6 @@ class LoginScreen: BaseTestCase {
     
     
     
-}
+    
+    
+

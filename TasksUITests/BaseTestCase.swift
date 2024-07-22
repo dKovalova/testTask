@@ -52,15 +52,18 @@ class BaseTestCase: XCTestCase {
     
         //for Tasks class (setUp))
     func logIn(email: String, password: String) {
+        
         // Ensure the user is logged in before each test
         checkElementExists(elements: [emailTextField], timeout: 1)
         fillEmailField(email: email)
         app.keyboards.buttons["Return"].tap()
+        
         //self.tapReturnKey() - func doesn't work yet
         checkElementExists(elements: [passwordTextField], timeout: 1)
         fillPasswordField(password: password)
         //self.tapReturnKey() - func doesn't work yet
         app.keyboards.buttons["Return"].tap()
+        
         checkElementExists(elements: [loginButton], timeout: 1)
         app.buttons["login-button"].tap()
         
@@ -123,8 +126,13 @@ private  func handleLogoutAlert(confirm: Bool) {
             passwordTextField.tap()
             passwordTextField.typeText(password)
         }
-       
     
+       
+    func isButtonHittable(button: String) -> Bool {
+        let button = app.buttons[button]
+        XCTAssertTrue(button.exists, "\(button) button does not exist")
+        return button.isHittable
+    }
     
     
     
@@ -172,20 +180,24 @@ private  func handleLogoutAlert(confirm: Bool) {
     }
     
     
-    func incorrectLoginValuesAlert() {
+    func incorrectLoginValuesAlertIs() -> Bool {
         let errorAlert = app.alerts["Error"]
-        let okButton = errorAlert.buttons["Ok"]
-        
-        if errorAlert.waitForExistence(timeout: 3) {
-            if okButton.exists {
-                okButton.tap()
-            } else {
-                XCTFail("Ok button not found in error alert.")
-            }
-        } else {
-            XCTFail("Error alert not found.")
-        }
+        return errorAlert.exists
     }
+    
+    
+    func clearTextInField(_ element: XCUIElement) {
+           XCTAssertTrue(element.exists, "Text field does not exist")
+           element.tap()
+           
+           guard let stringValue = element.value as? String else {
+               XCTFail("Element does not contain a string value")
+               return
+           }
+           
+           let deleteString = String(repeating: XCUIKeyboardKey.delete.rawValue, count: stringValue.count)
+           element.typeText(deleteString)
+       }
     
     
     }

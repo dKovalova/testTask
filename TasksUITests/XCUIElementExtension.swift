@@ -11,7 +11,8 @@ import XCTest
 
 
 
-extension XCTestCase {
+extension XCUIElement {
+
     
     //    func runActivity<A>(_ description: String, block: () throws -> A) rethrows -> A {
     //        os_log("Started %{public}@", description)
