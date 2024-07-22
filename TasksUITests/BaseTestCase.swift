@@ -18,6 +18,7 @@ class BaseTestCase: XCTestCase {
        var passwordTextField: XCUIElement!
        var logoutButton: XCUIElement!
        var loginButton: XCUIElement!
+       var loginAlert: XCUIElement!
     
     
     override func setUpWithError() throws {
@@ -31,6 +32,7 @@ class BaseTestCase: XCTestCase {
                 passwordTextField = app.secureTextFields["Password"]
                 logoutButton = app.buttons["Logout"]
                 loginButton = app.buttons["login-button"]
+                loginAlert = app.alerts["Error"]
        
     }
     
@@ -67,11 +69,6 @@ class BaseTestCase: XCTestCase {
         checkElementExists(elements: [loginButton], timeout: 1)
         app.buttons["login-button"].tap()
         
-        if errorLoginAlertIs() {
-            retryLogin(confirm: true)
-        }
-        
-       checkElementExists(elements: [logoutButton], timeout: 5)
     }
         
     
@@ -104,8 +101,8 @@ private  func handleLogoutAlert(confirm: Bool) {
     
     
     //for tearnDown in tasks class
-    //Check if the user is logged in
-    func isUserLoggedIn() -> Bool {
+       //Check if the user is logged in
+        func isUserLoggedIn() -> Bool {
         let tasksScreenElement = app.buttons["Logout"]
         return tasksScreenElement.exists
     }
@@ -128,7 +125,7 @@ private  func handleLogoutAlert(confirm: Bool) {
         }
     
        
-    func isButtonHittable(button: String) -> Bool {
+        func isButtonHittable(button: String) -> Bool {
         let button = app.buttons[button]
         XCTAssertTrue(button.exists, "\(button) button does not exist")
         return button.isHittable
@@ -137,10 +134,11 @@ private  func handleLogoutAlert(confirm: Bool) {
     
     
     
+    func errorLoginAlertIs() -> Bool {
+        return loginAlert.exists
+    }
     
     func retryLogin (confirm: Bool) {
-        let loginAlert = app.alerts["Error"]
-        
         
         // Check if the error alert is present
         if loginAlert.waitForExistence(timeout: 3) {
@@ -211,10 +209,7 @@ private  func handleLogoutAlert(confirm: Bool) {
 //    }
     
     
-    func errorLoginAlertIs() -> Bool {
-        let loginAlert = app.alerts["Error"]
-        return loginAlert.exists
-    }
+
     
     
     func incorrectLoginValuesAlertIs(expectedMessage: String) -> Bool {

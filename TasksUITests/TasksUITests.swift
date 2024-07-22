@@ -26,7 +26,6 @@ class LoginScreen: BaseTestCase {
         loggingin = app.staticTexts["Logging in..."]
         checklistpoint = app.staticTexts["Buy milk"]
         toolbar = app.toolbars["Toolbar"]
-        errorAlert = app.alerts["Error"]
         
         
         // add checking if user is logged in = logout it
@@ -50,11 +49,12 @@ class LoginScreen: BaseTestCase {
         
         logIn(email: "test@example.com", password: "wA!@#$%^&*(_+=[}|':,>?/`~")
         
+        
         // Check that the "Logging in..." message appears
         self.checkElementExists(elements: [loggingin], timeout: 1)
         
     
-        //fix  errorLoginAlertIs
+    
         // Check if there's an error alert
            if errorLoginAlertIs() {
                // Retry login if there's an error alert
@@ -72,8 +72,9 @@ class LoginScreen: BaseTestCase {
     //broken test
     //wrong alert found durins test execution
     func testLoginWithInvalidEmail() {
-    
-        logIn(email: "example.com", password: "123")
+        
+    //Login
+      logIn(email: "invalid-email", password: "123")
     
         
         //checking alert existance
@@ -87,7 +88,14 @@ class LoginScreen: BaseTestCase {
                 } else {
                     XCTFail("Error alert with the expected message not found.")
                 }
+        
+        // Check that Login screen is shown again
+        //Add verification that text fields are fiiled
+        self.checkElementExists(elements: [emailTextField, passwordTextField, loginButton], timeout: 1)
+        
         }
+    
+    
        
     
         
