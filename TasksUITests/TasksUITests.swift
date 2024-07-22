@@ -47,16 +47,6 @@ class LoginScreen: BaseTestCase {
     func testSuccessfulLogin() throws {
         
         
-        // add func - runActivity("Enter email and password")
-        
-//        self.fillEmailField(email: "test@example.com")
-//        app.keyboards.buttons["Return"].tap()
-//        self.fillPasswordField(password: "wA!@#$%^&*(_+=[}|':,>?/`~")
-//        app.keyboards.buttons["Return"].tap()
-//        let doneButton = app.buttons["login-button"]
-//        self.checkElementExists(elements: [doneButton], timeout: 1)
-//        app.buttons["login-button"].tap()
-        
         
         logIn(email: "test@example.com", password: "wA!@#$%^&*(_+=[}|':,>?/`~")
         
@@ -64,6 +54,7 @@ class LoginScreen: BaseTestCase {
         self.checkElementExists(elements: [loggingin], timeout: 1)
         
     
+        //fix  errorLoginAlertIs
         // Check if there's an error alert
            if errorLoginAlertIs() {
                // Retry login if there's an error alert
@@ -77,24 +68,25 @@ class LoginScreen: BaseTestCase {
     
     
     
+    
     //broken test
     //wrong alert found durins test execution
     func testLoginWithInvalidEmail() {
-        let okButton = app.buttons["Ok"]
     
         logIn(email: "example.com", password: "123")
     
         
         //checking alert existance
-        if  incorrectLoginValuesAlertIs() {
-            if okButton.exists {
-                okButton.tap()
-            } else {
-                XCTFail("Ok button not found in error alert.")
-            }
-        } else {
-            XCTFail("Error alert not found.")
-        }
+        if incorrectLoginValuesAlertIs(expectedMessage: "Incorrect login or password format") {
+            let okButton = app.buttons["Ok"]
+                    if okButton.exists {
+                        okButton.tap()
+                    } else {
+                        XCTFail("Ok button not found in error alert.")
+                    }
+                } else {
+                    XCTFail("Error alert with the expected message not found.")
+                }
         }
        
     

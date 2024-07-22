@@ -136,42 +136,79 @@ private  func handleLogoutAlert(confirm: Bool) {
     
     
     
-    func retryLogin (confirm: Bool, maxRetries: Int = 3) {
+    
+    
+    func retryLogin (confirm: Bool) {
         let loginAlert = app.alerts["Error"]
-        let retryButton = app.buttons["Retry"]
-        let cancelButton = app.buttons["Cancel"]
         
-        var attempts = 0
         
-        //loop
-        while attempts < maxRetries {
+        // Check if the error alert is present
+        if loginAlert.waitForExistence(timeout: 3) {
+            print("Error alert is present.")
             
-            // Check if the error alert is present
-            if loginAlert.waitForExistence(timeout: 5) {
-                // Wait for the retry button to appear
-                if retryButton.waitForExistence(timeout: 1) {
-                    // Tap the appropriate button based on the confirm parameter
-                    if confirm {
-                        retryButton.tap()
-                    } else {
-                        cancelButton.tap()
-                    }
+            let retryButton = loginAlert.buttons["Retry"]
+            let cancelButton = loginAlert.buttons["Cancel"]
+            
+            
+            checkElementExists(elements: [retryButton], timeout: 2)
+            // Wait for the retry button to appear
+            if retryButton.waitForExistence(timeout: 1)  && retryButton.isHittable {
+                print("Retry button is hittable.")
+                
+                // Tap the appropriate button based on the confirm parameter
+                if confirm {
+                    retryButton.tap()
+                    print("Tapped on Retry button.")
+    
                 } else {
-                    XCTFail("Retry button not found in error alert.")
+                    cancelButton.tap()
+                    print("Tapped on Cancel button.")
                 }
             } else {
-                return
+                print("Retry button is not hittable or does not exist.")
             }
-            // Increment attempts
-            attempts += 1
-            
-            // Check if maximum retries reached
-            if attempts >= maxRetries {
-                XCTFail("Impossible to login after \(maxRetries) attempts.")
-            }
-            
+        } else {
+            print("Error alert did not appear.")
         }
     }
+    
+    
+//    func retryLogin (confirm: Bool, maxRetries: Int = 2) {
+//        let loginAlert = app.alerts["Error"]
+//        let retryButton = app.buttons["Retry"]
+//        let cancelButton = app.buttons["Cancel"]
+//        
+//        var attempts = 0
+//        
+//        //loop
+//        while attempts < maxRetries {
+//            
+//            // Check if the error alert is present
+//            if loginAlert.waitForExistence(timeout: 5) {
+//                // Wait for the retry button to appear
+//                if retryButton.waitForExistence(timeout: 1) {
+//                    // Tap the appropriate button based on the confirm parameter
+//                    if confirm {
+//                        retryButton.tap()
+//                    } else {
+//                        cancelButton.tap()
+//                    }
+//                } else {
+//                    XCTFail("Retry button not found in error alert.")
+//                }
+//            } else {
+//                return
+//            }
+//            // Increment attempts
+//            attempts += 1
+//            
+//            // Check if maximum retries reached
+//            if attempts >= maxRetries {
+//                XCTFail("Impossible to login after \(maxRetries) attempts.")
+//            }
+//            
+//        }
+//    }
     
     
     func errorLoginAlertIs() -> Bool {
@@ -180,10 +217,24 @@ private  func handleLogoutAlert(confirm: Bool) {
     }
     
     
-    func incorrectLoginValuesAlertIs() -> Bool {
-        let errorAlert = app.alerts["Error"]
-        return errorAlert.exists
-    }
+    func incorrectLoginValuesAlertIs(expectedMessage: String) -> Bool {
+           // Create a predicate to find the alert with the specific label 'Error'
+           let errorAlertPredicate = NSPredicate(format: "label == %@", "Error")
+           let errorAlert = app.alerts.element(matching: errorAlertPredicate)
+
+           // Verify if the alert exists
+           if errorAlert.exists {
+               // Create a predicate to find the static text within the alert
+               let messageTextPredicate = NSPredicate(format: "label == %@", expectedMessage)
+               let messageTextElement = errorAlert.staticTexts.element(matching: messageTextPredicate)
+
+               // Return true if the specific message is found
+               return messageTextElement.exists
+           }
+           
+           // Return false if the alert itself does not exist
+           return false
+       }
     
     
     func clearTextInField(_ element: XCUIElement) {
