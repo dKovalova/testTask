@@ -143,8 +143,8 @@ class BaseTestCase: XCTestCase {
     
     
     func errorLoginAlertIs(timeout: TimeInterval) -> Bool {
-       let loginAlert = app.alerts["Error"]
-        return loginAlert.exists
+        let loginAlert = app.alerts["Error"]
+        return loginAlert.waitForExistence(timeout: timeout)
     }
     
     
