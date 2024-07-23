@@ -18,7 +18,7 @@ class BaseTestCase: XCTestCase {
        var passwordTextField: XCUIElement!
        var logoutButton: XCUIElement!
        var loginButton: XCUIElement!
-       var loginAlert: XCUIElement!
+
     
     
     override func setUpWithError() throws {
@@ -28,11 +28,12 @@ class BaseTestCase: XCTestCase {
         
         
         // Initialize UI elements
-                emailTextField = app.textFields["Email"]
-                passwordTextField = app.secureTextFields["Password"]
+            //    emailTextField = app.textFields["password-text-field"]
+             //   passwordTextField = app.secureTextFields["Password"]
+         passwordTextField = app.secureTextFields.containing(NSPredicate(format: "placeholderValue == %@", "Password")).element
+         emailTextField = app.textFields.containing(NSPredicate(format: "placeholderValue == %@", "Email")).element
                 logoutButton = app.buttons["Logout"]
                 loginButton = app.buttons["login-button"]
-                loginAlert = app.alerts["Error"]
        
     }
     
@@ -69,8 +70,10 @@ class BaseTestCase: XCTestCase {
         checkElementExists(elements: [loginButton], timeout: 1)
         app.buttons["login-button"].tap()
         
+        
     }
         
+    
     
     // Function to handle logout if logged in
     func logout(confirm: Bool) {
@@ -82,22 +85,27 @@ class BaseTestCase: XCTestCase {
     
     
     // Handle the logout confirmation alert
-private  func handleLogoutAlert(confirm: Bool) {
+    private func handleLogoutAlert(confirm: Bool) {
         let alert = app.alerts.firstMatch
         let logoutButton = alert.buttons["Logout"]
         let cancelButton = alert.buttons["Cancel"]
         
+        print("Alert exists: \(alert.exists)")
+        print("Logout button exists: \(logoutButton.exists)")
+        print("Cancel button exists: \(cancelButton.exists)")
+        
         if logoutButton.waitForExistence(timeout: 2) {
             if confirm {
+                print("Tapping Logout button")
                 logoutButton.tap()
             } else {
+                print("Tapping Cancel button")
                 cancelButton.tap()
             }
         } else {
             XCTFail("Logout confirmation alert did not appear.")
         }
     }
-    
     
     
     //for tearnDown in tasks class
@@ -134,7 +142,8 @@ private  func handleLogoutAlert(confirm: Bool) {
     
     
     
-    func errorLoginAlertIs() -> Bool {
+    func errorLoginAlertIs(timeout: TimeInterval) -> Bool {
+       let loginAlert = app.alerts["Error"]
         return loginAlert.exists
     }
     

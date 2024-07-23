@@ -54,21 +54,21 @@ class LoginScreen: BaseTestCase {
         self.checkElementExists(elements: [loggingin], timeout: 1)
         
     
-    
-        // Check if there's an error alert and retry
-        self.checkElementExists(elements: [loginAlert], timeout: 3)
-           if errorLoginAlertIs() {
-               // Retry login if there's an error alert
-               retryLogin(confirm: true)
-           }
+        // Check for login alert if it appears, otherwise continue
+            //dont add this code in Login func because it causes error in testLoginWithInvalidEmail()
+               if errorLoginAlertIs(timeout: 5) {
+                   // Retry login if there's an error alert
+                   retryLogin(confirm: true)
+                   
+                   // Check that the "Logging in..." message appears again
+                   self.checkElementExists(elements: [loggingin], timeout: 1)
+               }
+           
         
-        
-        // Check that the "Logging in..." message appears
-        self.checkElementExists(elements: [loggingin], timeout: 1)
         
         
         // Check that the "Checklist" screen appears
-        self.checkElementExists(elements: [checklistpoint, logoutButton, toolbar], timeout: 5)
+       checkElementExists(elements: [checklistpoint, logoutButton, toolbar], timeout: 5)
         
     }
     
@@ -83,7 +83,7 @@ class LoginScreen: BaseTestCase {
       logIn(email: "invalid-email", password: "123")
     
         
-        //checking alert existance
+        //checking alert existance (it is only test where this alert exists)
         if incorrectLoginValuesAlertIs(expectedMessage: "Incorrect login or password format") {
             let okButton = app.buttons["Ok"]
                     if okButton.exists {

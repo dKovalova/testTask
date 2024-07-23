@@ -26,7 +26,15 @@ class Tasks: BaseTestCase {
         
         self.logIn(email: "test@example.com", password: "1")
         
-      
+        // Check for login alert if it appears, otherwise continue
+            //dont add this code in Login func because it causes error in testLoginWithInvalidEmail()
+               if errorLoginAlertIs(timeout: 5) {
+                   // Retry login if there's an error alert
+                   retryLogin(confirm: true)
+               }
+        
+       //Check that User is Logged in
+        self.checkElementExists(elements: [checklistpoint], timeout: 3)
     
         
     }
@@ -47,8 +55,8 @@ class Tasks: BaseTestCase {
         self.logout(confirm: true)
         
         
-        //add verification that Login screen appears
-        self.checkElementExists(elements: [emailTextField, passwordTextField, loginButton], timeout: 3)
+        // verification that Login screen appears
+       self.checkElementExists(elements: [emailTextField, passwordTextField, loginButton], timeout: 10)
         
         
         // Restart the app
@@ -56,19 +64,21 @@ class Tasks: BaseTestCase {
         app.launch()
         
         // Verify that the Login screen appears again after restarting the app
-        self.checkElementExists(elements: [emailTextField, passwordTextField, loginButton], timeout: 3)
+     self.checkElementExists(elements: [emailTextField, passwordTextField, loginButton], timeout: 10)
         
     }
     
     func testCancelLogout() {
-        self.logout(confirm: false)
+        logout(confirm: false)
         
         //add verification that Tasks screen opened
-        self.checkElementExists(elements: [checklistpoint], timeout: 3)
+        checkElementExists(elements: [checklistpoint], timeout: 3)
         
         //add restart app + checking screen
         
     }
+    
+    
     
     
 //    func testAllButtonsAreHittable() {
