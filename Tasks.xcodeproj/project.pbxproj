@@ -27,6 +27,7 @@
 		5CC6996328D451160093A4A9 /* LoginProgressViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5CC6996228D451160093A4A9 /* LoginProgressViewController.m */; };
 		5CC69B7228D48F710093A4A9 /* Macros.h in Sources */ = {isa = PBXBuildFile; fileRef = 5CC69B7128D48F710093A4A9 /* Macros.h */; };
 		5CC69B7628D4A3300093A4A9 /* NSString+Email.m in Sources */ = {isa = PBXBuildFile; fileRef = 5CC69B7528D4A3300093A4A9 /* NSString+Email.m */; };
+		840B72AC2C526AF300EBFE07 /* TestsStrings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840B72AB2C526AF300EBFE07 /* TestsStrings.swift */; };
 		8418177D2C414796002F654C /* TasksUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8418177C2C414796002F654C /* TasksUITests.swift */; };
 		8418177F2C414796002F654C /* TasksUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8418177E2C414796002F654C /* TasksUITestsLaunchTests.swift */; };
 		841817862C414963002F654C /* BaseTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841817852C414963002F654C /* BaseTestCase.swift */; };
@@ -78,6 +79,7 @@
 		5CC69B7128D48F710093A4A9 /* Macros.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Macros.h; sourceTree = "<group>"; };
 		5CC69B7428D4A3300093A4A9 /* NSString+Email.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Email.h"; sourceTree = "<group>"; };
 		5CC69B7528D4A3300093A4A9 /* NSString+Email.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Email.m"; sourceTree = "<group>"; };
+		840B72AB2C526AF300EBFE07 /* TestsStrings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestsStrings.swift; sourceTree = "<group>"; };
 		8418177A2C414796002F654C /* TasksUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TasksUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8418177C2C414796002F654C /* TasksUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TasksUITests.swift; sourceTree = "<group>"; };
 		8418177E2C414796002F654C /* TasksUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TasksUITestsLaunchTests.swift; sourceTree = "<group>"; };
@@ -216,6 +218,7 @@
 		8418177B2C414796002F654C /* TasksUITests */ = {
 			isa = PBXGroup;
 			children = (
+				840B72AB2C526AF300EBFE07 /* TestsStrings.swift */,
 				841818822C4152E0002F654C /* Extensions */,
 				8418177C2C414796002F654C /* TasksUITests.swift */,
 				8418177E2C414796002F654C /* TasksUITestsLaunchTests.swift */,
@@ -356,6 +359,7 @@
 				8418177D2C414796002F654C /* TasksUITests.swift in Sources */,
 				841818812C4152C9002F654C /* XCUIElementExtension.swift in Sources */,
 				841817862C414963002F654C /* BaseTestCase.swift in Sources */,
+				840B72AC2C526AF300EBFE07 /* TestsStrings.swift in Sources */,
 				8418177F2C414796002F654C /* TasksUITestsLaunchTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

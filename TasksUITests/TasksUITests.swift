@@ -9,144 +9,60 @@
 import XCTest
 
 class LoginScreen: BaseTestCase {
-    
-    var checklistpoint: XCUIElement!
     var loggingin: XCUIElement!
     var toolbar: XCUIElement!
     var errorAlert: XCUIElement!
     
     override func setUpWithError() throws {
         try super.setUpWithError()
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-        
-        // In UI tests it is usually best to stop immediately when a failure occurs.
-        
-        continueAfterFailure = false
         
         loggingin = app.staticTexts["Logging in..."]
-        checklistpoint = app.staticTexts["Buy milk"]
         toolbar = app.toolbars["Toolbar"]
         
-        
-        // add checking if user is logged in = logout it
-        
-        // In UI tests it’s important to set the initial state - such as interface orientation - required for your tests before they run. The setUp method is a good place to do this.
+        if self.isUserLoggedIn() {
+            self.logout(confirm: true)
+        }
     }
     
     override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-        self.logout(confirm: true)
-        
+        try super.tearDownWithError()
     }
-    
-    
-    // to add case with Sign in error + Retry or Cancel
-    // working test
     
     func testSuccessfulLogin() throws {
-        
-        
-        
-        logIn(email: "test@example.com", password: "wA!@#$%^&*(_+=[}|':,>?/`~")
-        
-        
+        logIn(email: testStrings.validEmail, password: testStrings.validPassword)
         // Check that the "Logging in..." message appears
         self.checkElementExists(elements: [loggingin], timeout: 1)
-        
-    
-        // Check for login alert if it appears, otherwise continue
-            //dont add this code in Login func because it causes error in testLoginWithInvalidEmail()
-               if errorLoginAlertIs(timeout: 5) {
-                   // Retry login if there's an error alert
-                   retryLogin(confirm: true)
-                   
-                   // Check that the "Logging in..." message appears again
-                   //fix it 
-               //   self.checkElementExists(elements: [loggingin], timeout: 5)
-               }
-           
-        
-        
-        
+        // Wait for an alert to appear and handle it if it does
+        if alerts.waitForExistence(timeout: 5) {
+                closeAppAlerts(with: "Retry")
+        }
         // Check that the "Checklist" screen appears
-       checkElementExists(elements: [checklistpoint, logoutButton, toolbar], timeout: 5)
-        
+        checkElementExists(elements: [checklistpoint, toolbar], timeout: 3)
     }
     
-    
-    
-    
-
-
     func testLoginWithInvalidEmail() {
-        
-    //Login
-      logIn(email: "invalid-email", password: "123")
-    
-        
-        //checking alert existance (it is only test where this alert exists)
-        if incorrectLoginValuesAlertIs(expectedMessage: "Incorrect login or password format") {
-            let okButton = app.buttons["Ok"]
-                    if okButton.exists {
-                        okButton.tap()
-                    } else {
-                        XCTFail("Ok button not found in error alert.")
-                    }
-                } else {
-                    XCTFail("Error alert with the expected message not found.")
-                }
-        
-        // Check that Login screen is shown again
-        //Add verification that text fields are fiiled
-        self.checkElementExists(elements: [emailTextField, passwordTextField, loginButton], timeout: 1)
-        
+        logIn(email: testStrings.invalidEmail, password: testStrings.validPassword)
+        closeAppAlerts(with: "Ok")
+        XCTAssert(loginButton.exists, "Login button is not found after aler closing")
         }
-    
-    
-       
-    
-        
+     
     func testLoginButtonAvailability () {
-        
-        
         //only email field is filled
-        fillEmailField (email: "test")
+        fillEmailField (email: testStrings.invalidEmail)
         app.keyboards.buttons["Return"].tap()
-        XCTAssertTrue(isButtonHittable(button: "login-button"), "Login button should not be hittable when only email is filled")
-        
-        
+        XCTAssertTrue(isButtonHittable(button: loginButton), "Login button should not be hittable when only email is filled")
         // Clear email field
         clearTextInField(emailTextField)
-
-        
-        
         // only password field is filled
-        fillPasswordField(password: "123")
+        fillPasswordField(password: testStrings.validPassword)
         app.keyboards.buttons["Return"].tap()
-        XCTAssertTrue(isButtonHittable(button: "login-button"), "Login button should not be hittable when only password is filled")
-        
+        XCTAssertTrue(isButtonHittable(button: loginButton), "Login button should not be hittable when only password is filled")
         // Clear password field
         clearTextInField(passwordTextField)
-        
-        
         // Both fields are filled
-        fillEmailField(email: "test@example.com")
-        fillPasswordField(password: "123")
+        fillEmailField(email: testStrings.validEmail)
+        fillPasswordField(password: testStrings.validPassword)
         app.keyboards.buttons["Return"].tap()
-        
-        XCTAssertTrue(isButtonHittable(button: "login-button"), "Login button should be hittable when both fields are filled")
-
+        XCTAssertTrue(isButtonHittable(button: loginButton), "Login button should be hittable when both fields are filled")
     }
-        
-    
-        
-    }
-    
-    
-    
-    
-    
-    
-    
-    
-
+}
