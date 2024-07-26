@@ -34,7 +34,7 @@
     func testConfirmLogout() {
         self.logout(confirm: true)
         // verification that Login screen appears
-       self.checkElementExists(elements: [emailTextField], timeout: 2)
+        self.checkElementExists(elements: [emailTextField], timeout: 2)
         // Restart the app
         app.terminate()
         app.launch()
@@ -47,5 +47,44 @@
         logout(confirm: false)
         //add verification that Tasks screen opened
         checkElementExists(elements: [checklistpoint], timeout: 3)
+    }
+        
+    func testCheckboxesVerification() {
+        // Assuming the checkboxes are in a table
+        let allCheckboxes = app.tables.cells.descendants(matching: .image).matching(identifier: "cell_image_view")
+        
+        //Verify that no checkboxes are marked initially
+        for i in 0..<allCheckboxes.count {
+            let checkbox = allCheckboxes.element(boundBy: i)
+            assertCheckbox(checkbox, becameChecked: false)
+        }
+        //Tap  on the each checkbox and check that cell is marked
+        for i in 0..<allCheckboxes.count {
+            let checkbox = allCheckboxes.element(boundBy: i)
+            // Tap on the checkbox to check it
+            checkbox.tap()
+            // Verify that the checkbox is marked
+            assertCheckbox(checkbox, becameChecked: true)
+            // Verify that only this checkbox is marked, and others are not
+            for j in 0..<allCheckboxes.count {
+                let otherCheckboxes = allCheckboxes.element(boundBy: j)
+                let shouldBeChecked = (i == j)
+                assertCheckbox(otherCheckboxes, becameChecked: shouldBeChecked)
+            }
+            // Tap on the checkbox to uncheck it
+            checkbox.tap()
+            // Verify that the checkbox is not marked
+            assertCheckbox(checkbox, becameChecked: false)
+            //Verify that no checkboxes are marked
+            for j in 0..<allCheckboxes.count {
+                let otherCheckboxes = allCheckboxes.element(boundBy: j)
+                assertCheckbox(otherCheckboxes, becameChecked: false)
+            }
+        }
+    }
+        
+    private func assertCheckbox(_ checkbox: XCUIElement, becameChecked checked: Bool) {
+        let expectedValue = checked ? "Selected" : "Not selected"
+        XCTAssertEqual(checkbox.value as? String, expectedValue, "Checkbox state should be \(expectedValue) after tapping on it")
     }
 }
