@@ -19,6 +19,9 @@ class BaseTestCase: XCTestCase {
     var loginButton: XCUIElement!
     var checklistpoint: XCUIElement!
     var alerts: XCUIElement!
+    var completeAll: XCUIElement!
+    var allCheckboxes: XCUIElementQuery!
+    var cancellAll: XCUIElement!
     
     override func setUpWithError() throws {
         continueAfterFailure = false
@@ -26,10 +29,13 @@ class BaseTestCase: XCTestCase {
         // Initialize UI elements
         passwordTextField = app.secureTextFields.containing(NSPredicate(format: "placeholderValue == %@", "Password")).firstMatch
         emailTextField = app.textFields.containing(NSPredicate(format: "placeholderValue == %@", "Email")).firstMatch
-        logoutButton = app.buttons["Logout"]
-        loginButton = app.buttons["login-button"]
-        checklistpoint = app.staticTexts["Buy milk"]
+        logoutButton = app.buttons["Logout"].firstMatch
+        loginButton = app.buttons["login-button"].firstMatch
+        checklistpoint = app.staticTexts["Buy milk"].firstMatch
         alerts = app.alerts.firstMatch
+        completeAll = app.buttons["Complete All"].firstMatch
+        allCheckboxes = app.tables.cells.descendants(matching: .image).matching(identifier: "cell_image_view")
+        cancellAll = app.buttons["Cancel All"].firstMatch
     }
     
     override func tearDownWithError() throws {
@@ -68,13 +74,13 @@ class BaseTestCase: XCTestCase {
     func logIn(email: String, password: String) {
         // enter email
         fillEmailField(email: email)
-        app.keyboards.buttons["Return"].tap()
+        tapReturnKey()
         //enter password
         fillPasswordField(password: password)
-        app.keyboards.buttons["Return"].tap()
+        tapReturnKey()
         //verification that login button exists + tap
         checkElementExists(elements: [loginButton], timeout: 1)
-        app.buttons["login-button"].tap()
+        app.buttons["login-button"].firstMatch.tap()
     }
     
     func clearTextInField(_ element: XCUIElement) {
@@ -92,14 +98,14 @@ class BaseTestCase: XCTestCase {
     func logout(confirm: Bool) {
         if isUserLoggedIn() {
             logoutButton.tap()
-            handleLogoutAlert(confirm: confirm)
+            handleLogout(confirm: confirm)
         }
     }
     
     //Handle the logout confirmation alert
-    private func handleLogoutAlert(confirm: Bool) {
-        let logoutButton = alerts.buttons["Logout"]
-        let cancelButton = alerts.buttons["Cancel"]
+    private func handleLogout(confirm: Bool) {
+        let logoutButton = alerts.buttons["Logout"].firstMatch
+        let cancelButton = alerts.buttons["Cancel"].firstMatch
         
         //for debug
         print("Alert exists: \(alerts.exists)")
@@ -145,99 +151,41 @@ class BaseTestCase: XCTestCase {
     
     //for tearnDown in tasks class
     func isUserLoggedIn() -> Bool {
-        let tasksScreenElement = app.buttons["Logout"]
+        let tasksScreenElement = app.buttons["Logout"].firstMatch
         return tasksScreenElement.exists
     }
     
+    func tapReturnKey() {
+        let systemKeyboard = app.keyboards.firstMatch
+        let returnKey = systemKeyboard.buttons["Return"].firstMatch
+        
+        //Find and check that keyboard is shown
+        XCTAssertTrue(systemKeyboard.exists, "System keyboard should be visible")
+        //Check that the Return button exists and is hittable
+        XCTAssertTrue(returnKey.exists && returnKey.isHittable, "Return key should exist and be hittable")
+        //tap on Return button and check that Keyboad closes
+        returnKey.tap()
+        XCTAssertFalse(systemKeyboard.exists, "System keyboard should be closed after tapping the Return key")
+    }
+    
+    func completeAllCheckboxes() {
+        //Check "Complete All" button existance, tap it
+        checkElementExists(elements: [completeAll], timeout: 1)
+        completeAll.tap()
+        //Check "Cancell All" button existance, tap it
+        checkElementExists(elements: [cancellAll], timeout: 1)
+    }
+    
+    func fetchTaskNames(from app: XCUIApplication) -> [String] {
+        //Create an empty array of strings that will hold the names of the tasks
+        var taskNames: [String] = []
+        let taskCells = app.tables.cells
+        
+        for i in 0..<taskCells.count {
+            let taskCell = taskCells.element(boundBy: i)
+            let taskName = taskCell.staticTexts.element(boundBy: 0).label
+            taskNames.append(taskName)
+        }
+        return taskNames
+    }
 }
-
-//    func errorLoginAlertIs(timeout: TimeInterval) -> Bool {
-//        let loginAlert = app.alerts["Error"]
-//        return loginAlert.waitForExistence(timeout: timeout)
-//    }
-//
-//
-//    func retryLogin (confirm: Bool, maxRetries: Int = 2) {
-//        let loginAlert = app.alerts["Error"]
-//        let retryButton = app.buttons["Retry"]
-//        let cancelButton = app.buttons["Cancel"]
-//
-//        var attempts = 0
-//
-//        //loop
-//        while attempts < maxRetries {
-//
-//            // Check if the error alert is present
-//            if loginAlert.waitForExistence(timeout: 5) {
-//                // Wait for the retry button to appear
-//                if retryButton.waitForExistence(timeout: 1) {
-//                    // Tap the appropriate button based on the confirm parameter
-//                    if confirm {
-//                        retryButton.tap()
-//                    } else {
-//                        cancelButton.tap()
-//                    }
-//                } else {
-//                    XCTFail("Retry button not found in error alert.")
-//                }
-//            } else {
-//                return
-//            }
-//            // Increment attempts
-//            attempts += 1
-//
-//            // Check if maximum retries reached
-//            //change maxRetries  = 3
-//            if attempts >= maxRetries {
-//                XCTFail("Impossible to login after \(maxRetries) attempts.")
-//            }
-//
-//        }
-//    }
-//
-//    func incorrectLoginValuesAlertIs(expectedMessage: String) -> Bool {
-//        // Create a predicate to find the alert with the specific label 'Error'
-//        let errorAlertPredicate = NSPredicate(format: "label == %@", "Error")
-//        let errorAlert = app.alerts.element(matching: errorAlertPredicate)
-//
-//        // Verify if the alert exists
-//        if errorAlert.exists {
-//            // Create a predicate to find the static text within the alert
-//            let messageTextPredicate = NSPredicate(format: "label == %@", expectedMessage)
-//            let messageTextElement = errorAlert.staticTexts.element(matching: messageTextPredicate)
-//
-//            // Return true if the specific message is found
-//            return messageTextElement.exists
-//        }
-//
-        // Return false if the alert itself does not exist
-//        return false
-
-//dont use this func
-//        func tapReturnKey() {
-//            let returnKey = app.buttons["Return"]
-//            if returnKey.exists {
-//                returnKey.tap()
-//            } else {
-//                XCTFail("Return key does not exist")
-//            }
-//        }
-
-//        func checkElementsAreHittable(elements: [XCUIElement], after timeout: TimeInterval) -> (allHittable: Bool, nonHittableButtons: [XCUIElement]) {
-//            var nonHittableButtons: [XCUIElement] = []
-//            for element in elements {
-//                if !element.isHittable {
-//                    nonHittableButtons.append(element)
-//                }
-//            }
-//            return (nonHittableButtons.isEmpty, nonHittableButtons)
-//        }
-//
-//
-//
-//        func checkAllButtonsAreHittable(app: XCUIApplication, timeout: TimeInterval = 5) -> (allHittable: Bool, nonHittableButtons: [XCUIElement]) {
-//            let buttons = app.buttons.allElementsBoundByIndex
-//            return checkElementsAreHittable(elements: buttons, after: timeout)
-//        }
-//
-//}
