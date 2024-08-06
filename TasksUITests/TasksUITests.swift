@@ -44,7 +44,10 @@ class LoginScreen: BaseTestCase {
         logIn(email: testStrings.invalidEmail, password: testStrings.validPassword)
         closeAppAlerts(with: "Ok")
         XCTAssert(loginButton.exists, "Login button is not found after aler closing")
+        //email field is still filled
         XCTAssertEqual(emailTextField.value as? String, testStrings.invalidEmail, "The email text field should still contain the initial text after closing the alert")
+        //password field is still filled
+        XCTAssertEqual((passwordTextField.value as? String)?.count, testStrings.validPassword.count, "The password text field should still contain the same number of characters after closing the alert")
         }
      
     func testLoginButtonAvailability () {
